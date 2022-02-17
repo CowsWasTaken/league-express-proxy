@@ -4,6 +4,10 @@ package-lock.json
 *.log
 *.gz
 
+# WebStorm Stuff
+.DS_Store
+.idea
+
 # Coveralls
 .nyc_output
 coverage
