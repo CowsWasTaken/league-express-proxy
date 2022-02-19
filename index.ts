@@ -2,13 +2,58 @@ import axios from "axios";
 import express from 'express';
 import cors from 'cors'
 import {credentials} from "./config/credentials";
+import {PlatformHostValue} from "./constants/PlatformHostValue";
+import {RegionalHostValue} from "./constants/RegionalHostValue";
+import {SummonerDTO} from "./models/SummonerDTO";
+import {MatchQueryParameter, objectToQueryString} from "./models/MatchQueryParameter";
 
 
 const app = express();
 
 app.use(cors())
 
+const protocol = 'https'
+
 const api_key = credentials.apiKey
+
+const api_query = `api_key=${api_key}`
+
+
+async function getPlayerPUUID(platformHost: PlatformHostValue, summonerName: string): Promise<SummonerDTO> {
+    return axios.get(`${createBaseUrl(platformHost)}/lol/summoner/v4/summoners/by-name/${summonerName}?${api_query}`)
+        .then(response => {
+            console.log(`Fetched PUUID: ${response.data.puuid}`)
+            return response.data as SummonerDTO
+        }).catch(err => err);
+}
+
+function createBaseUrl(hostValue: PlatformHostValue | RegionalHostValue): string {
+    return `${protocol}://${hostValue}`
+}
+
+async function getPlayerMatches(regionalHostValue: RegionalHostValue, puuid: string , matchQueryParameter: MatchQueryParameter) : Promise<any> {
+    const queryString = objectToQueryString(matchQueryParameter)
+    return axios.get(`${createBaseUrl(regionalHostValue)}/lol/match/v5/matches/by-puuid/${puuid}/ids?${api_query}`)
+        .then(response => {
+            console.log(`Fetched Player Matches for: ${puuid}`)
+            return response.data
+        }).catch(err => err);
+}
+
+async function getMatch(regionalHostValue: RegionalHostValue, matchId: string): Promise<any> {
+    return axios.get(`${createBaseUrl(regionalHostValue)}/lol/match/v5/matches/${matchId}?${api_query}`)
+        .then(response => {
+            console.log(`Fetched Match: ${matchId} `)
+            return response.data
+        }).catch(err => err);
+}
+
+
+app.get('/:summonername', async (req, res) => {
+    const summonerDTO = await getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername)
+    res.json(summonerDTO)
+})
+
 
 function getPlayerUUID(playerName: string) {
     return axios.get('https://na1.api.riotgames.com' + '/lol/summoner/v4/summoners/by-name/' + playerName + "?api_key=" + api_key)
