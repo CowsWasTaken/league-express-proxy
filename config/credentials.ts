@@ -1,3 +1,10 @@
 export const credentials = {
-    apiKey: 'RGAPI-2461898a-a566-4a76-99cb-60b33a8eb785'
+    apiKey: 'RGAPI-8e595675-ac65-4131-abf8-c6adfc55a193',
+    connection : {
+        host: '127.0.0.1',
+        user: 'root',
+        password: 'felix',
+        database: 'league_db',
+        port: 3306
+    }
 };
