@@ -1,12 +1,12 @@
 import {MatchType} from "./MatchType";
 
 export interface MatchQueryParameter {
-    startTime: number,
-    endTime: number,
-    queue: number,
-    type: MatchType,
-    start: number,
-    count: number
+    startTime?: number,
+    endTime?: number,
+    queue?: number,
+    type?: MatchType,
+    start?: number,
+    count?: number
 }
 
 export function objectToQueryString(obj: any) {

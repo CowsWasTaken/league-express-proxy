@@ -6,6 +6,7 @@ import {PlatformHostValue} from "./constants/PlatformHostValue";
 import {RegionalHostValue} from "./constants/RegionalHostValue";
 import {SummonerDTO} from "./models/SummonerDTO";
 import {MatchQueryParameter, objectToQueryString} from "./models/MatchQueryParameter";
+import {createConnection } from 'mysql2';
 
 
 const app = express();
@@ -31,14 +32,21 @@ function createBaseUrl(hostValue: PlatformHostValue | RegionalHostValue): string
     return `${protocol}://${hostValue}`
 }
 
-async function getPlayerMatches(regionalHostValue: RegionalHostValue, puuid: string , matchQueryParameter: MatchQueryParameter) : Promise<any> {
+
+async function getPlayerMatches(regionalHostValue: RegionalHostValue, puuid: string, matchQueryParameter: MatchQueryParameter): Promise<any> {
     const queryString = objectToQueryString(matchQueryParameter)
-    return axios.get(`${createBaseUrl(regionalHostValue)}/lol/match/v5/matches/by-puuid/${puuid}/ids?${api_query}`)
+    let API_CALL = `${createBaseUrl(regionalHostValue)}/lol/match/v5/matches/by-puuid/${puuid}/ids?${api_query}`
+    if (queryString.length > 0) {
+        API_CALL = `${API_CALL}=${queryString}`
+    }
+    console.log(API_CALL)
+    return axios.get(API_CALL)
         .then(response => {
             console.log(`Fetched Player Matches for: ${puuid}`)
             return response.data
         }).catch(err => err);
 }
+
 
 async function getMatch(regionalHostValue: RegionalHostValue, matchId: string): Promise<any> {
     return axios.get(`${createBaseUrl(regionalHostValue)}/lol/match/v5/matches/${matchId}?${api_query}`)
@@ -47,6 +55,13 @@ async function getMatch(regionalHostValue: RegionalHostValue, matchId: string): 
             return response.data
         }).catch(err => err);
 }
+
+app.get('/matches/:summonername', async (req, res) => {
+    // const body = req.body as MatchQueryParameter
+    const body: MatchQueryParameter = {count: 100}
+    const summonerDTO = await getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername)
+    const matches: [] = await getPlayerMatches(RegionalHostValue.EUROPE, summonerDTO.puuid, body)
+})
 
 
 app.get('/:summonername', async (req, res) => {
@@ -86,6 +101,28 @@ app.get('/past5Games/:playerName', async (req, res) => {
     res.json(matchDataArray)
 })
 
-app.listen(4000, function () {
-    console.log("Server started on localhost 4000")
-}) // localhost:4000
+
+const connection = createConnection({
+    port: 3306,
+    host: 'localhost',
+    user: 'root',
+    password: 'felix',
+    database: 'league_db'
+});
+
+// open the MySQL connection
+connection.connect((error: any) => {
+    if (error) {
+        console.log("A error has been occurred "
+            + "while connecting to database.");
+        throw error;
+    } else {
+        console.log("Database connected")
+    }
+
+
+    //If Everything goes correct, Then start Express Server
+    app.listen(4000, function () {
+        console.log("Server started on localhost 4000")
+    }) // localhost:4000
+});
