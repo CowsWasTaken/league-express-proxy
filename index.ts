@@ -85,6 +85,12 @@ async function saveMatches(matchIds: string[]) {
 
 app.get('/:summonername', async (req, res) => {
     const summonerDTO = await getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername)
+    await dataService.saveSummoner(Mapper.summonerToEntity(summonerDTO))
+    res.json(summonerDTO)
+})
+
+app.get('/:summonername/matches/info', async (req, res) => {
+    const summonerDTO = await getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername)
     res.json(summonerDTO)
 })
 

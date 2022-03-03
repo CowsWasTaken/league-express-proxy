@@ -25,7 +25,7 @@ export class DataStoreService {
 
     }
 
-    saveSummoner(summoner: SummonerEntity): Promise<any> {
+    async saveSummoner(summoner: SummonerEntity): Promise<any> {
         return this.db.insert(summoner).into(Tables.SUMMONER_TBL)
             .catch((err) => err)
     }
@@ -37,5 +37,19 @@ export class DataStoreService {
     async saveMatch(puuid: string, match: MatchEntity): Promise<any> {
         return this.db.insert(match).into(Tables.MATCH_TBL).catch(err => err)
     }
+
+    async getMatchesForSummoner(puuid: string) : Promise<MatchEntity[]> {
+        return this.db.select().from(Tables.MATCH_TBL)
+        .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
+        .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`)
+        .catch(err => err) as Promise<MatchEntity[]>;
+    }
+
+    async getPuuidForName(summonerName: string): Promise<SummonerEntity> {
+        return this.db.table(Tables.SUMMONER_TBL).whereRaw(`LOWER(name) LIKE ?', '%'+${summonerName.toLowerCase()}+'%`).first()
+        .catch(err => err);
+    }
+
+
 
 }
