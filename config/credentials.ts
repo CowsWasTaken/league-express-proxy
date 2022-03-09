@@ -1,5 +1,5 @@
 export const credentials = {
-    apiKey: 'RGAPI-66a97675-7681-4485-83f1-90fe78c2ca76',
+    apiKey: 'RGAPI-0cfb60e9-d24d-49d1-ac45-164ca566d8b7',
     connection : {
         host: '127.0.0.1',
         user: 'root',

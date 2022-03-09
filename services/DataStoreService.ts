@@ -3,6 +3,7 @@ import {SummonerEntity} from "../models/Entities/SummonerEntity";
 import {credentials} from "../config/credentials";
 import {Tables} from "../constants/Tables";
 import {MatchEntity} from "../models/Entities/MatchEntity";
+import {SummonerMatchEntity} from "../models/Entities/SummonerMatchEntity";
 
 
 export class DataStoreService {
@@ -35,21 +36,22 @@ export class DataStoreService {
     }
 
     async saveMatch(puuid: string, match: MatchEntity): Promise<any> {
-        return this.db.insert(match).into(Tables.MATCH_TBL).catch(err => err)
+        const summonerMatchEntity: SummonerMatchEntity = {matchId: match.matchId, puuid}
+        await this.db.insert(match).into(Tables.MATCH_TBL).catch(err => err)
+        return this.db.insert(summonerMatchEntity).into(Tables.SUMMONER_MATCH_TBL).catch(err => err)
     }
 
-    async getMatchesForSummoner(puuid: string) : Promise<MatchEntity[]> {
+    async getMatchesForSummoner(puuid: string): Promise<MatchEntity[]> {
         return this.db.select().from(Tables.MATCH_TBL)
-        .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
-        .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`)
-        .catch(err => err) as Promise<MatchEntity[]>;
+            .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
+            .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`)
+            .catch(err => err) as Promise<MatchEntity[]>;
     }
 
     async getPuuidForName(summonerName: string): Promise<SummonerEntity> {
         return this.db.table(Tables.SUMMONER_TBL).whereRaw(`LOWER(name) LIKE ?', '%'+${summonerName.toLowerCase()}+'%`).first()
-        .catch(err => err);
+            .catch(err => err);
     }
-
 
 
 }
