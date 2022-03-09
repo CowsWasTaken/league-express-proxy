@@ -44,13 +44,13 @@ export class DataStoreService {
     async getMatchesForSummoner(puuid: string): Promise<MatchEntity[]> {
         return this.db.select().from(Tables.MATCH_TBL)
             .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
-            .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`)
+            .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`).where('puuid', puuid) // TODO Fix this bullshit
             .catch(err => err) as Promise<MatchEntity[]>;
     }
 
-    async getPuuidForName(summonerName: string): Promise<SummonerEntity> {
-        return this.db.table(Tables.SUMMONER_TBL).whereRaw(`LOWER(name) LIKE ?', '%'+${summonerName.toLowerCase()}+'%`).first()
-            .catch(err => err);
+
+    async getExistingMatches(matchIds: string[]): Promise<{ matchId: string }[]> {
+        return this.db.table(Tables.MATCH_TBL).select('matchId').whereIn('matchId', matchIds).catch(err => err)
     }
 
 
