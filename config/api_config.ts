@@ -1,3 +1,3 @@
 export const ApiConfig = {
-    timeoutTime: 120000 // in ms
+    timeoutTime: 120 // in seconds
 }
