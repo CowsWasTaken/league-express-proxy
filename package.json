@@ -7,7 +7,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.ts"
+    "tsc": "tsc",
+    "prepare": "npm run tsc",
+    "start:prod": "node build/index.ts"
   },
   "dependencies": {
     "axios": "^0.26.0",

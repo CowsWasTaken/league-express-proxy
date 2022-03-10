@@ -31,9 +31,8 @@ app.get('/matches/:summonername/detailed', async (req, res) => {
     res.json(list)
 })
 
-app.get('/test/:summonername', async (req, res) => {
-    const summonerDTO = await leagueApiService.getPlayerPUUID(res, PlatformHostValue.EUW1, req.params.summonername)
-    res.json(summonerDTO)
+app.get('/test', (req, res) => {
+    res.json('Hello')
 })
 
 /*
@@ -64,7 +63,7 @@ app.get('/matches/:summonername', async (req, res) => {
 })
 
 
-app.listen(4000, function () {
-    console.log("Server started on localhost 4000")
-}) // localhost:4000
+app.listen(3306, function () {
+    console.log("Server started on localhost 3306")
+}) // localhost:3306
 
