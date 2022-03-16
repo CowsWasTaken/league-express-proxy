@@ -1,10 +1,3 @@
-export function test() {
-    console.log('test')
-}
-
-console.log('here')
-
-
 // http://ddragon.leagueoflegends.com/cdn/12.5.1/data/en_US/champion.json
 export const ChampionConstants = {
     "type": "champion", "format": "standAloneComplex", "version": "12.5.1", "data": {

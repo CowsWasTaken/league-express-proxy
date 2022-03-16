@@ -1,4 +1,4 @@
-create table if not exists summoner_tbl
+create table if not exists league_db.summoner_tbl
 (
     puuid         varchar(100) not null,
     accountId     varchar(80),
@@ -10,7 +10,7 @@ create table if not exists summoner_tbl
     primary key (puuid)
 );
 
-create table if not exists match_tbl
+create table if not exists league_db.match_tbl
 (
     matchId          varchar(80) not null,
     gameDuration     bigint(30)  not null,
@@ -24,7 +24,7 @@ create table if not exists match_tbl
     primary key (matchId)
 );
 
-create table if not exists summoner_match_tbl
+create table if not exists league_db.summoner_match_tbl
 (
     puuid   varchar(100) not null,
     matchId varchar(80)  not null,
