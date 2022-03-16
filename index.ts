@@ -2,37 +2,32 @@ import express from 'express';
 import cors from 'cors'
 import {PlatformHostValue} from "./constants/PlatformHostValue";
 import {MatchEntity} from "./models/Entities/MatchEntity";
-import {GameModeConstants} from "./constants/GameModeConstants";
 import {LeagueApiService} from "./services/LeagueApiService";
+import {ServiceController} from "./services/ServiceController";
 
-
+setEnvVariables()
 const app = express();
+const port = process.env.SERVICE_PORT;
 
 app.use(cors())
 
-const leagueApiService = new LeagueApiService()
+const leagueApiService = LeagueApiService.getInstance() // move away
+const serviceController = ServiceController.getInstance()
 
 /*
     is to fetch all games from summoner to database
  */
 app.get('/matches/:summonername/execute', async (req, res) => {
-    // const body = req.body as MatchQueryParameter
-    const summonerDTO = await leagueApiService.getPlayerPUUID(res, PlatformHostValue.EUW1, req.params.summonername)
-    await leagueApiService.dataService.saveSummoner(summonerDTO)
-
     res.json('Matches get fetched from League Api, this can take up to 10 min')
-    await leagueApiService.fetchAndSaveAllMatchesForSummoner(res, summonerDTO)
+    await serviceController.fetchAndSaveAllMatchesForSummonerName(res, req.params.summonername)
 
 })
 
 app.get('/matches/:summonername/detailed', async (req, res) => {
-    const summonerDTO = await leagueApiService.getPlayerPUUID(res, PlatformHostValue.EUW1, req.params.summonername)
-    const list: MatchEntity[] = await leagueApiService.dataService.getMatchesForSummoner(summonerDTO.puuid);
-    res.json(list)
-})
 
-app.get('/test', (req, res) => {
-    res.json('Hello')
+    const summonerDTO = await leagueApiService.getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername)
+    const list: MatchEntity[] = await serviceController.getMatchesForPuuid(summonerDTO.puuid)
+    res.json(list)
 })
 
 /*
@@ -41,29 +36,23 @@ app.get('/test', (req, res) => {
 app.get('/matches/:summonername', async (req, res) => {
 
     const gameMode: string | undefined = req.query.gameMode as string | undefined;
-    const summonerDTO = await leagueApiService.getPlayerPUUID(res, PlatformHostValue.EUW1, req.params.summonername)
-    let matches: MatchEntity[] = []
-    if (gameMode) {
-        const isGameModeValid = GameModeConstants.find(element => element.gameMode === gameMode.toUpperCase())
-        if (!isGameModeValid) {
-            console.log(gameMode)
-            res.json(`No valid Parameter to search for Game Mode, was ${gameMode}`)
-            return
-        } else {
-            matches = await leagueApiService.dataService.getMatchesForSummonerFiltered(summonerDTO.puuid, gameMode);
-        }
-    } else {
-        matches = await leagueApiService.dataService.getMatchesForSummoner(summonerDTO.puuid);
-    }
-
-    const playtime = leagueApiService.getPlaytimeForMatches(matches)
-
-    res.json(`${gameMode ?? 'TOTAL'} playtime is ${(playtime / 3600).toFixed(2)} h`)
+    const summonername = req.params.summonername
+    await serviceController.getPlaytimeForSummoner(summonername, gameMode).then(playtime => {
+        res.json(`${gameMode ?? 'TOTAL'} playtime is ${(playtime / 3600).toFixed(2)} h`)
+    }).catch(err => {
+        res.json(err);
+    })
 
 })
 
 
-app.listen(3306, function () {
-    console.log("Server started on localhost 3306")
+app.listen(port, function () {
+    console.log(`Server started on localhost ${port}`)
 }) // localhost:3306
 
+
+function setEnvVariables() {
+    if (process.env.NODE_ENV !== 'production') {
+        require('dotenv').config();
+    }
+}

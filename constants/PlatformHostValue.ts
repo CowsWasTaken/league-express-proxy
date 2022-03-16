@@ -11,3 +11,10 @@ export enum PlatformHostValue {
     TR1 = 'tr1.api.riotgames.com',
     RU = 'ru.api.riotgames.com'
 }
+
+export namespace PlatformHostValue {
+    export function getDefault(): PlatformHostValue {
+        return PlatformHostValue.EUW1
+    }
+
+}
