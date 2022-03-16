@@ -5,6 +5,9 @@ package-lock.json
 *.gz
 build
 
+# execlude .env file from being pushed
+.env
+
 # WebStorm Stuff
 .DS_Store
 .idea
