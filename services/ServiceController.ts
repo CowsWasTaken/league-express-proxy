@@ -52,6 +52,7 @@ export class ServiceController {
 
         const matchIds = await this.leagueApiService.getAllPlayerMatchesList( summonerDTO.puuid)
         const filteredMatchIds: { existingMatches: string[], missingMatches: string[] } = await this.dataService.determineMissingGames(matchIds);
+        console.log()
         console.log(`Existing Matches: ${filteredMatchIds.existingMatches.length} \nMissing Games ${filteredMatchIds.missingMatches.length}`) // TODO logger
         filteredMatchIds.existingMatches.forEach(match => { // links all existing matches to summoner
             this.dataService.linkSummonerToMatch(summonerDTO.puuid, match)

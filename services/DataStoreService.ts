@@ -1,8 +1,9 @@
-import {Knex, knex} from 'knex'
 import {SummonerEntity} from "../models/Entities/SummonerEntity";
 import {Tables} from "../constants/Tables";
 import {MatchEntity} from "../models/Entities/MatchEntity";
 import {SummonerMatchEntity} from "../models/Entities/SummonerMatchEntity";
+import knex, {Knex} from "knex";
+import {TableManager} from "./TableManager";
 
 
 export class DataStoreService {
@@ -21,24 +22,14 @@ export class DataStoreService {
     /**
      * @type {Knex}
      */
-    private db
-    private dbConfig = knex({
-        client: 'mysql2',
-        connection: {
-            host: process.env.DATABASE_HOST,
-            user: process.env.DATABASE_USER,
-            password: process.env.DATABASE_PASSWORD,
-            database: process.env.DATABASE_DATABASE,
-            port: process.env.DATABASE_PORT as unknown as number
-        }
-    });
+    private db: Knex
 
     private constructor() {
-        this.db = this.dbConfig
-
+        this.db = DataStoreService.getKnexConfig()
         this.db.raw("SELECT 1").then(() => {
             console.log("MySQL connected");
         })
+        new TableManager(this.db).checkAndCreateAllTables().then()
     }
     /*
         singleton pattern
@@ -70,10 +61,14 @@ export class DataStoreService {
         return playtime
     }
 
-    
+    private static getKnexConfig(): Knex {
+        const knexConfig = require('../knexfile');
+        return knex(knexConfig[process.env.NODE_ENV as string])
+    }
+
     async saveSummoner(summoner: SummonerEntity): Promise<any> {
         return this.db.insert(summoner).into(Tables.SUMMONER_TBL)
-            .catch((err) => err)
+            .catch((err: any) => err)
     }
 
     /*
@@ -81,7 +76,7 @@ export class DataStoreService {
     */
     async linkSummonerToMatch(puuid: string, matchId: string): Promise<any> {
         const summonerMatchEntity: SummonerMatchEntity = {matchId, puuid}
-        return this.db.insert(summonerMatchEntity).into(Tables.SUMMONER_MATCH_TBL).catch(err => err)
+        return this.db.insert(summonerMatchEntity).into(Tables.SUMMONER_MATCH_TBL).catch((err: any) => err)
     }
 
     /*
@@ -100,7 +95,7 @@ export class DataStoreService {
             .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
             .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`)
             .orderBy('gameCreation', "asc")
-            .catch(err => err) as Promise<MatchEntity[]>;
+            .catch((err: any) => err) as Promise<MatchEntity[]>;
     }
 
     /*
@@ -111,14 +106,14 @@ export class DataStoreService {
             .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
             .innerJoin(Tables.SUMMONER_TBL, `${Tables.SUMMONER_MATCH_TBL}.puuid`, `${Tables.SUMMONER_TBL}.puuid`)
             .orderBy('gameCreation', "asc")
-            .catch(err => err) as Promise<MatchEntity[]>;
+            .catch((err: any) => err) as Promise<MatchEntity[]>;
     }
 
     /*
         returns list of matchids found in database for parameter
     */
     async getExistingMatches(matchIds: string[]): Promise<{ matchId: string }[]> {
-        return this.db.table(Tables.MATCH_TBL).select('matchId').whereIn('matchId', matchIds).catch(err => err)
+        return this.db.table(Tables.MATCH_TBL).select('matchId').whereIn('matchId', matchIds).catch((err: any) => err)
     }
 
     /*
