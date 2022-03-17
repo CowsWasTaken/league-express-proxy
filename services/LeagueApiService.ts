@@ -17,6 +17,9 @@ export class LeagueApiService {
     private constructor() {
     }
 
+    /*
+        singleton pattern
+    */
     public static getInstance(): LeagueApiService {
         if (!LeagueApiService.instance) {
             LeagueApiService.instance = new LeagueApiService();
@@ -25,6 +28,9 @@ export class LeagueApiService {
         return LeagueApiService.instance;
     }
 
+    /*
+        returns Summoner for summonername and platformhost
+    */
     async getPlayerPUUID(platformHost: PlatformHostValue, summonerName: string): Promise<SummonerDTO | any> {
         return axios.get(`${this.createBaseUrl(platformHost)}/lol/summoner/v4/summoners/by-name/${summonerName}?${this.api_query}`)
             .then(response => {
@@ -33,10 +39,13 @@ export class LeagueApiService {
             }).catch(err => Promise.reject(err));
     }
 
+    /*
+        returns list of matchdIds for player puuid and for additional matchQueryParameter
+    */
     async getPlayerMatches(regionalHostValue: RegionalHostValue, puuid: string, matchQueryParameter?: MatchQueryParameter): Promise<string[]> {
         let playerMatches_API_CALL = `${this.createBaseUrl(regionalHostValue)}/lol/match/v5/matches/by-puuid/${puuid}/ids?${this.api_query}` // creates api call
         if (matchQueryParameter) { // adds querystring to api call if exists
-            const queryString = objectToQueryString(matchQueryParameter)
+            const queryString = objectToQueryString(matchQueryParameter)    
             playerMatches_API_CALL = `${playerMatches_API_CALL}&${queryString}`
         }
         return axios.get(playerMatches_API_CALL)
@@ -46,6 +55,9 @@ export class LeagueApiService {
             }).catch(err => Promise.reject(err));
     }
 
+    /*
+        returns detailed matchinfo for matchid
+    */
     async getMatch(regionalHostValue: RegionalHostValue, matchId: string): Promise<MatchDTO> {
         return axios.get(`${this.createBaseUrl(regionalHostValue)}/lol/match/v5/matches/${matchId}?${this.api_query}`)
             .then(response => {
@@ -59,11 +71,10 @@ export class LeagueApiService {
             });
     }
 
+
     /*
-    returns playtime in seconds for matches
- */
-
-
+        returns all matches for summoner available from league api
+    */
     async getAllPlayerMatchesList(puuid: string) {
         let isFetchedMatchesGreaterMaxCount = true
         let matches: string[] = []

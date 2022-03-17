@@ -23,6 +23,9 @@ app.get('/matches/:summonername/execute', async (req, res) => {
 
 })
 
+/*
+    returns every match finding for summoner stored in database
+*/
 app.get('/matches/:summonername/detailed', async (req, res) => {
 
     const summonerDTO = await leagueApiService.getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername)
@@ -31,8 +34,9 @@ app.get('/matches/:summonername/detailed', async (req, res) => {
 })
 
 /*
-    returns stats for aram,
+    returns overall stats or for specified query gamemode, query parameter is the gamemode
  */
+
 app.get('/matches/:summonername', async (req, res) => {
 
     const gameMode: string | undefined = req.query.gameMode as string | undefined;
@@ -51,6 +55,9 @@ app.listen(port, function () {
 }) // localhost:3306
 
 
+/**
+ * sets the env variables from .env files if NODE_ENV is not for production
+ */
 function setEnvVariables() {
     if (process.env.NODE_ENV !== 'production') {
         require('dotenv').config();

@@ -40,7 +40,9 @@ export class DataStoreService {
             console.log("MySQL connected");
         })
     }
-
+    /*
+        singleton pattern
+    */
     public static getInstance(): DataStoreService {
         if (!DataStoreService.instance) {
             DataStoreService.instance = new DataStoreService();
@@ -49,6 +51,9 @@ export class DataStoreService {
         return DataStoreService.instance;
     }
 
+    /*
+        returns the playtime of matches in seconds
+    */
     static getPlaytimeForMatches(matches: MatchEntity[]) {
         let playtime = 0;
         for (let i = 0; i < matches.length; i++) {
@@ -65,21 +70,31 @@ export class DataStoreService {
         return playtime
     }
 
+    
     async saveSummoner(summoner: SummonerEntity): Promise<any> {
         return this.db.insert(summoner).into(Tables.SUMMONER_TBL)
             .catch((err) => err)
     }
 
+    /*
+        links existing summoner to existing match 
+    */
     async linkSummonerToMatch(puuid: string, matchId: string): Promise<any> {
         const summonerMatchEntity: SummonerMatchEntity = {matchId, puuid}
         return this.db.insert(summonerMatchEntity).into(Tables.SUMMONER_MATCH_TBL).catch(err => err)
     }
 
+    /*
+        saves match in database and links it to existing summoner
+    */
     async saveFullMatch(puuid: string, match: MatchEntity): Promise<any> {
         await this.db.insert(match).into(Tables.MATCH_TBL).catch(err => err)
         return this.linkSummonerToMatch(puuid, match.matchId)
     }
 
+    /*
+        returns list of matches for puuid found
+    */
     async getMatchesForPuuid(puuid: string): Promise<MatchEntity[]> {
         return this.db.select(this.matchRows).from(Tables.MATCH_TBL).where(`${Tables.SUMMONER_TBL}.puuid`, '=', puuid)
             .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
@@ -88,6 +103,9 @@ export class DataStoreService {
             .catch(err => err) as Promise<MatchEntity[]>;
     }
 
+    /*
+        returns list of matches for puuid found, filtered with gamemode
+    */
     async getMatchesForPuuidFiltered(puuid: string, gameMode: string): Promise<MatchEntity[]> {
         return this.db.select(this.matchRows).from(Tables.MATCH_TBL).where(`${Tables.SUMMONER_TBL}.puuid`, '=', puuid).andWhere(`${Tables.MATCH_TBL}.gameMode`, '=', gameMode)
             .innerJoin(Tables.SUMMONER_MATCH_TBL, `${Tables.SUMMONER_MATCH_TBL}.matchId`, `${Tables.MATCH_TBL}.matchId`)
@@ -96,10 +114,16 @@ export class DataStoreService {
             .catch(err => err) as Promise<MatchEntity[]>;
     }
 
+    /*
+        returns list of matchids found in database for parameter
+    */
     async getExistingMatches(matchIds: string[]): Promise<{ matchId: string }[]> {
         return this.db.table(Tables.MATCH_TBL).select('matchId').whereIn('matchId', matchIds).catch(err => err)
     }
 
+    /*
+        returns list of existing and missing matches found for list
+    */
     async determineMissingGames(matchIds: string[]): Promise<{ existingMatches: string[], missingMatches: string[] }> {
         const existingMatches: string[] = (await this.getExistingMatches(matchIds) as { matchId: string }[]).map(res => res.matchId)// gets all matches existing already from database for list
         for (let i = 0; i < existingMatches.length; i++) {
