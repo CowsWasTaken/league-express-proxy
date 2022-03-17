@@ -6,41 +6,6 @@ So let's see how this is written in the documentation (if one comes)
 
 For this project i not really cared about code quality, so here we go...
 
-## Requirements
-
-### API_KEY Requirements
-
-To get an API_KEY visit https://developer.riotgames.com/ , create an account and generate an `API_KEY`
-
-
-### Database Requirements
-
-The latest version of `mysql` image is used for the database.
-
-You have to create your own database with schema `league-express-proxy/my-sql-league-db/schema.sql`, because i was to lazy to add it in the docker compose file.
-So simply cd into `league-express-proxy/my-sql-league-db/` and run `docker compose up`. Then you can ssh into your container (via `docker exec -it <container name> /bin/bash`),
-login, and run the schema.
-
-You can also use your own database implementation, I used Knex.js as Query Builder so u just need to change the config and client info of it.
-Just stick a bit to the schema and everything should be good :)
-
-### Environment Variable Requirements
-
-To run this project, you will need to add the following environment variables to your .env file
-
-```bash
-Example: 
-
-NODE_ENV='test'
-SERVICE_PORT=4000
-DATABASE_HOST='127.0.0.1'
-DATABASE_USER='root'
-DATABASE_PASSWORD='password'
-DATABASE_DATABASE='league_db'
-DATABASE_PORT=3306
-API_KEY='RGAPI-xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx'
-```
-
 
 ## Run Locally
 
@@ -50,10 +15,17 @@ Clone the project
   git clone https://github.com/CowsWasTaken/league-express-proxy.git
 ```
 
-Go to the project directory
+Go to the project directory (don't forget to set your `API_KEY` in the `.env` file)
 
 ```bash
   cd league-express-proxy
+```
+
+
+Run Database
+
+```bash
+  docker compose up
 ```
 
 Install dependencies
@@ -67,8 +39,42 @@ Start the server
 ```bash
   npm run start:dev
 ```
+You can access the service on `http://localhost:port/` (default is set to 4000)
+
+## Requirements
+
+### API_KEY Requirements
+
+To get an API_KEY visit https://developer.riotgames.com/ , create an account and generate an `API_KEY`
 
 
+### Database Requirements
+
+Make sure to have `Docker` and `Docker Compose` installed at your machine.
+
+The latest version of `mysql` image is used for the database.
+
+The Database schema can be seen in the `schema.sql`
+
+You can also use your own database implementation, I used Knex.js as Query Builder so u just need to change the config and client info of it.
+Just stick a bit to the schema and everything should be good :)
+
+### Environment Variable Requirements
+
+To run this project, you will need to add the following environment variables to your .env file
+
+```bash
+Example: 
+
+NODE_ENV='development'
+SERVICE_PORT=4000
+DATABASE_HOST='127.0.0.1'
+DATABASE_USER='root'
+DATABASE_PASSWORD='password'
+DATABASE_DATABASE='league_db'
+DATABASE_PORT=3306
+API_KEY='RGAPI-xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx'
+```
 
 
 ## Optimizations
