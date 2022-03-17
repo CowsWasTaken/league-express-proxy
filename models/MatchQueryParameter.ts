@@ -9,6 +9,11 @@ export interface MatchQueryParameter {
     count?: number
 }
 
+/**
+ * 
+ * @param obj 
+ * @returns handed parameter object translated to query string
+ */
 export function objectToQueryString(obj: any) {
     let str = [];
     for (let p in obj)

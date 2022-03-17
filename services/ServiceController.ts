@@ -19,6 +19,9 @@ export class ServiceController {
     private constructor() {
     }
 
+    /*
+        singleton pattern
+    */
     public static getInstance(): ServiceController {
         if (!ServiceController.instance) {
             ServiceController.instance = new ServiceController();
@@ -27,6 +30,11 @@ export class ServiceController {
         return ServiceController.instance;
     }
 
+    /**
+     * 
+     * @param res 
+     * @param summonername 
+     */
     async fetchAndSaveAllMatchesForSummonerName(res: any, summonername: string) {
 
         const summonerDTO = await this.getSummonerForName(summonername)
@@ -35,6 +43,11 @@ export class ServiceController {
     }
 
 
+    /**
+     * 
+     * @param res 
+     * @param summonerDTO 
+     */
     async fetchAndSaveAllMatchesForSummoner(res: any, summonerDTO: SummonerDTO) {
 
         const matchIds = await this.leagueApiService.getAllPlayerMatchesList( summonerDTO.puuid)
@@ -48,6 +61,12 @@ export class ServiceController {
         console.log(`All Matches for ${summonerDTO.name} has been fetched`) // TODO logger
     }
 
+    /**
+     * 
+     * @param puuid to link summoner to match
+     * @param matchId matchId for game which is being fetched and stored
+     * @returns Promise if everything went fine
+     */
     async saveMatch(puuid: string, matchId: string): Promise<any> {
 
         const matchDTO = await this.leagueApiService.getMatch(RegionalHostValue.EUROPE, matchId).catch((err: LeagueHttpError) => {
@@ -59,6 +78,11 @@ export class ServiceController {
         return this.dataService.saveFullMatch(puuid, matchEntity);
     }
 
+    /**
+     * 
+     * @param puuid summoner puuid
+     * @param matchIds matchids to fetch, store and link to summoner
+     */
     async saveMatchesForList(puuid: string, matchIds: string[]) {
         let arr: string[] = [] // list with matchIds witch have been resolved and saved
         let rejected: string[] = []
@@ -96,10 +120,21 @@ export class ServiceController {
         //TODO implement if the api call is rejected, retry after specific time
     }
 
+    /**
+     * 
+     * @param puuid 
+     * @returns list of matchentities found in database for puuid
+     */
     async getMatchesForPuuid(puuid: string) {
         return this.dataService.getMatchesForPuuid(puuid)
     }
 
+    /**
+     * 
+     * @param summonername name of summoner
+     * @param platformHost region summoner plays in EUW, NA, etc
+     * @returns summoner DTO
+     */
     async getSummonerForName(summonername: string, platformHost?: PlatformHostValue) {
         if (platformHost) {
             return this.leagueApiService.getPlayerPUUID(platformHost, summonername).catch(err => {
@@ -113,6 +148,12 @@ export class ServiceController {
         }
     }
 
+    /**
+     * 
+     * @param summonername name of summoner
+     * @param gameMode optional gamemode to get playtime form ARAM, CLASSIC, TUTORIAL, etc
+     * @returns playtime in seconds
+     */
     async getPlaytimeForSummoner(summonername: string, gameMode?: string): Promise<any> {
         const summonerDTO = await this.getSummonerForName(summonername).catch(err => {
             return Promise.reject(err)
@@ -134,6 +175,11 @@ export class ServiceController {
     }
 
 
+    /**
+     * 
+     * @param ms delay in milliseconds
+     * @returns Promise with given delay
+     */
     delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 }
