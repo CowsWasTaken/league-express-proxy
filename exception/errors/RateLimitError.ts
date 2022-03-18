@@ -1,5 +1,5 @@
 import HttpStatusCode from '../../models/HttpStatusCodes';
-import {AppError} from './AppError';
+import {NetworkError} from './NetworkError';
 
 export interface LeagueHttpError {
     status: number,
@@ -7,7 +7,7 @@ export interface LeagueHttpError {
     retryAfter?: number
 }
 
-export class RateLimitError extends AppError {
+export class RateLimitError extends NetworkError {
 	public readonly name: string;
 	public readonly httpCode: HttpStatusCode;
 	public readonly retryAfter: number;
