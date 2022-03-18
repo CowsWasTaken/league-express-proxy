@@ -7,8 +7,7 @@ import {ServiceController} from "./services/ServiceController";
 
 setEnvVariables()
 const app = express();
-const port = process.env.SERVICE_PORT;
-
+const port: number = process.env.SERVICE_PORT as unknown as number
 app.use(cors())
 
 const leagueApiService = LeagueApiService.getInstance() // move away
