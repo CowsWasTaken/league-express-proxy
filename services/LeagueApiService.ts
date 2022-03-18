@@ -4,7 +4,7 @@ import axios from "axios";
 import {RegionalHostValue} from "../constants/RegionalHostValue";
 import {MatchQueryParameter, objectToQueryString} from "../models/MatchQueryParameter";
 import {MatchDTO} from "../models/DTOs/MatchDTO";
-import {LeagueHttpError} from "../exception/errors/LeagueHttpError";
+import {LeagueHttpError} from "../exception/errors/RateLimitError";
 import {QUERY_PARAMS} from "../config/QUERY_PARAMS";
 
 export class LeagueApiService {

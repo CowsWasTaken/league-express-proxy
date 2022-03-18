@@ -1,8 +1,8 @@
 import {SummonerDTO} from "../models/DTOs/SummonerDTO";
-import {DataStoreService} from "./DataStoreService";
+import {DataStoreService} from "../database/DataStoreService";
 import {LeagueApiService} from "./LeagueApiService";
 import {RegionalHostValue} from "../constants/RegionalHostValue";
-import {LeagueHttpError} from "../exception/errors/LeagueHttpError";
+import {LeagueHttpError} from "../exception/errors/RateLimitError";
 import {MatchDTO} from "../models/DTOs/MatchDTO";
 import {Mapper} from "../models/Mapper";
 import {ApiConfig} from "../config/api_config";
@@ -89,7 +89,7 @@ export class ServiceController {
         let rejected: string[] = []
 
         let isTooManyRequests = false
-        let retryAfter = ApiConfig.timeoutTime
+        let retryAfter = ApiConfig.defaultTimeoutTime
 
         for (let i = 0; (i < matchIds.length) && (!isTooManyRequests); i++) {
             let matchId = matchIds[i]

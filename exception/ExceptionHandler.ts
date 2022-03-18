@@ -1,5 +1,5 @@
 import HttpStatusCode from "../models/HttpStatusCodes";
-import {LeagueHttpError} from "./errors/LeagueHttpError";
+import {LeagueHttpError} from "./errors/RateLimitError";
 
 export class ExceptionHandler {
     static handleException(err: any, res: any): any | LeagueHttpError {
