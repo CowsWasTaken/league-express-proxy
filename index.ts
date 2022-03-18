@@ -6,7 +6,8 @@ import {LeagueApiService} from './services/LeagueApiService';
 import {ServiceController} from './services/ServiceController';
 import {config} from 'dotenv';
 import {GameMode} from './models/GameMode';
-import {ExceptionHandler} from "./exception/ExceptionHandler";
+import {ExceptionHandler} from './exception/ExceptionHandler';
+import {FetchInfo} from './models/FetchInfo';
 
 setEnvVariables();
 const app = express();
@@ -22,10 +23,13 @@ const serviceController = ServiceController.getInstance();
 app.post('/matches/:summonername/execute', async (req, res, next) => {
 
     try {
-        res.json('Matches get fetched from League Api, this can take up to 10 min');
-        await serviceController.fetchAndSaveAllMatchesForSummonerName(res, req.params.summonername);
+        const summonername = req.params.summonername;
+        const summonerDTO = await serviceController.getSummonerForName(summonername);
+        const filteredMatches = await serviceController.getFilteredMatchesForPuuid(summonerDTO.puuid);
+        res.json(FetchInfo.calculate(filteredMatches));
+        await serviceController.fetchAndSaveForFilteredMatchesSummoner( summonerDTO, filteredMatches);
     } catch (err) {
-        next(err)
+        next(err);
     }
 
 });
@@ -40,7 +44,7 @@ app.get('/matches/:summonername/detailed', async (req, res, next) => {
         const list: MatchEntity[] = await serviceController.getMatchesForPuuid(summonerDTO.puuid);
         res.json(list);
     } catch (err) {
-        next(err)
+        next(err);
     }
 
 });
@@ -51,12 +55,12 @@ app.get('/matches/:summonername/detailed', async (req, res, next) => {
 app.get('/matches/:summonername', async (req, res, next) => {
     try {
         const gameModeQuery = req.query.gameMode as string | undefined;
-        let gameModeObject: GameMode | undefined = gameModeQuery ? GameMode.getConstant(gameModeQuery) : undefined
+        const gameModeObject: GameMode | undefined = gameModeQuery ? GameMode.getConstant(gameModeQuery) : undefined;
         const summonername = req.params.summonername;
         const matchesSummary = await serviceController.getMatchesSummary(summonername, gameModeObject);
-        res.json(matchesSummary)
+        res.json(matchesSummary);
     } catch (err) {
-        next(err)
+        next(err);
     }
 });
 
@@ -65,11 +69,11 @@ app.listen(port, function () {
     console.log(`Server started on localhost ${port}`);
 });
 
-app.use(handleGlobalExceptions)
+app.use(handleGlobalExceptions);
 
 
 function handleGlobalExceptions(err: any, req: any, res: any, next: any) {
-    ExceptionHandler.handleException(err, res, next)
+    ExceptionHandler.handleException(err, res, next);
 }
 
 /**

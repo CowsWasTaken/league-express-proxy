@@ -4,6 +4,7 @@ import {MatchEntity} from '../models/Entities/MatchEntity';
 import {SummonerMatchEntity} from '../models/Entities/SummonerMatchEntity';
 import knex, {Knex} from 'knex';
 import {TableManager} from './TableManager';
+import {FilteredMatches} from '../models/FilteredMatches';
 
 
 export class DataStoreService {
@@ -120,7 +121,7 @@ export class DataStoreService {
 	/*
         returns list of existing and missing matches found for list
     */
-	async determineMissingGames(matchIds: string[]): Promise<{ existingMatches: string[], missingMatches: string[] }> {
+	async determineMissingGames(matchIds: string[]): Promise<FilteredMatches> {
 		const existingMatches: string[] = (await this.getExistingMatches(matchIds) as { matchId: string }[]).map(res => res.matchId);// gets all matches existing already from database for list
 		for (let i = 0; i < existingMatches.length; i++) {
 			const index = matchIds.findIndex(matchId => matchId === existingMatches[i]); // find index in list

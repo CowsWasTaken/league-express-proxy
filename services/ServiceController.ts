@@ -11,6 +11,7 @@ import {MatchEntity} from '../models/Entities/MatchEntity';
 import {GameModeConstants} from '../constants/GameModeConstants';
 import {GameMode} from '../models/GameMode';
 import {MatchesSummary} from '../models/MatchesSummary';
+import {FilteredMatches} from '../models/FilteredMatches';
 
 export class ServiceController {
 
@@ -35,34 +36,31 @@ export class ServiceController {
 
     /**
      *
-     * @param res
-     * @param summonername
+     * @param summonerDTO
+     * @param filteredMatches
      */
-    async fetchAndSaveAllMatchesForSummonerName(res: any, summonername: string) {
-
-        const summonerDTO = await this.getSummonerForName(summonername);
+    async fetchAndSaveForFilteredMatchesSummoner(summonerDTO: SummonerDTO, filteredMatches: FilteredMatches) {
         await this.dataService.saveSummoner(summonerDTO);
-        await this.fetchAndSaveAllMatchesForSummoner(res, summonerDTO);
+        await this.fetchAndSaveForFilteredMatches( summonerDTO.puuid, filteredMatches);
     }
 
+    async getFilteredMatchesForPuuid(puuid: string): Promise<FilteredMatches> {
+        const matchIds = await this.leagueApiService.getAllPlayerMatchesList(puuid);
+        return this.dataService.determineMissingGames(matchIds);
+    }
 
     /**
      *
-     * @param res
-     * @param summonerDTO
+     * @param puuid
+     * @param filteredMatches
      */
-    async fetchAndSaveAllMatchesForSummoner(res: any, summonerDTO: SummonerDTO) {
+    async fetchAndSaveForFilteredMatches(puuid: string, filteredMatches: FilteredMatches) {
 
-        const matchIds = await this.leagueApiService.getAllPlayerMatchesList(summonerDTO.puuid);
-        const filteredMatchIds: { existingMatches: string[], missingMatches: string[] } = await this.dataService.determineMissingGames(matchIds);
-        console.log();
-        console.log(`Existing Matches: ${filteredMatchIds.existingMatches.length} \nMissing Games ${filteredMatchIds.missingMatches.length}`); // TODO logger
-        filteredMatchIds.existingMatches.forEach(match => { // links all existing matches to summoner
-            this.dataService.linkSummonerToMatch(summonerDTO.puuid, match);
+        filteredMatches.existingMatches.forEach(match => { // links all existing matches to summoner
+            this.dataService.linkSummonerToMatch(puuid, match);
         });
-        await this.saveMatchesForList(summonerDTO.puuid, filteredMatchIds.missingMatches);
-
-        console.log(`All Matches for ${summonerDTO.name} has been fetched`); // TODO logger
+        await this.saveMatchesForList(puuid, filteredMatches.missingMatches);
+        console.log(`All Matches for Puuid: ${puuid} has been fetched`); // TODO logger
     }
 
     /**
@@ -172,7 +170,7 @@ export class ServiceController {
     }
 
     async getMatchesSummary(summonername: string, gameMode?: GameMode, platformHostValue?: PlatformHostValue) {
-        const summoner = await this.getSummonerForName(summonername)
+        const summoner = await this.getSummonerForName(summonername);
         const matches = gameMode ? await this.dataService.getMatchesForPuuidFiltered(summoner.puuid, gameMode.gameMode) : await this.getMatchesForSummonerName(summonername, platformHostValue);
         return {
             gameMode, matchesCount: matches.length, playtime: DataStoreService.getPlaytimeForMatches(matches)
