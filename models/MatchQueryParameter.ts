@@ -1,4 +1,4 @@
-import {MatchType} from "./MatchType";
+import {MatchType} from './MatchType';
 
 export interface MatchQueryParameter {
     startTime?: number,
@@ -10,16 +10,16 @@ export interface MatchQueryParameter {
 }
 
 /**
- * 
- * @param obj 
+ *
+ * @param obj
  * @returns handed parameter object translated to query string
  */
 export function objectToQueryString(obj: any) {
-    let str = [];
-    for (let p in obj)
-        if (obj.hasOwnProperty(p)) {
-            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        }
-    return str.join("&");
+	const str = [];
+	for (const p in obj) // eslint-disable-next-line no-prototype-builtins
+		if (obj.hasOwnProperty(p)) {
+			str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+		}
+	return str.join('&');
 }
 

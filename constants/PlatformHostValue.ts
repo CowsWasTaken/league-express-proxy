@@ -12,9 +12,9 @@ export enum PlatformHostValue {
     RU = 'ru.api.riotgames.com'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace PlatformHostValue {
-    export function getDefault(): PlatformHostValue {
-        return PlatformHostValue.EUW1
+    export function getDefault(): PlatformHostValue {return PlatformHostValue.EUW1;
     }
 
 }
