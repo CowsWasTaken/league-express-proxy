@@ -6,6 +6,8 @@ documentation (if one comes)
 
 For this project i not really cared about code quality, so here we go...
 
+Filter for Ranked Games coming soon...
+
 ## Run Locally
 
 Clone the project
