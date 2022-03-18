@@ -1,10 +1,10 @@
-import {MatchType} from './MatchType';
+import {MatchQueryType} from './MatchQueryType';
 
 export interface MatchQueryParameter {
     startTime?: number,
     endTime?: number,
     queue?: number,
-    type?: MatchType,
+    type?: MatchQueryType,
     start?: number,
     count?: number
 }

@@ -1,5 +1,7 @@
 // refer to https://static.developer.riotgames.com/docs/lol/gameModes.json
-export const GameModeConstants: { gameMode: string, description: string }[] = [
+import {GameMode} from '../models/GameMode';
+
+export const GameModeConstants: GameMode[] = [
 	{
 		'gameMode': 'CLASSIC',
 		'description': 'Classic Summoner\'s Rift and Twisted Treeline games'
