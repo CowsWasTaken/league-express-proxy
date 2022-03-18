@@ -19,7 +19,7 @@ const serviceController = ServiceController.getInstance();
 /*
     is to fetch all games from summoner to database
  */
-app.get('/matches/:summonername/execute', async (req, res, next) => {
+app.post('/matches/:summonername/execute', async (req, res, next) => {
 
     try {
         res.json('Matches get fetched from League Api, this can take up to 10 min');
