@@ -1,4 +1,4 @@
-# League Express Proxy
+# League Playtime API
 
 You can see your League of Legends overall playtime for all game-modes (you can also filter for them).
 Also you can receive all your played games, idk how  exactly I will implement this.
