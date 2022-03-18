@@ -16,10 +16,6 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "indent": [
-            "warn",
-            "tab"
-        ],
         "linebreak-style": [
             "error",
             "unix"

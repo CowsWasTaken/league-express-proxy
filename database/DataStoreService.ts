@@ -62,6 +62,7 @@ export class DataStoreService {
 	}
 
 	private static getKnexConfig(): Knex {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const knexConfig = require('../knexfile');
 		return knex(knexConfig[process.env.NODE_ENV as string]);
 	}
