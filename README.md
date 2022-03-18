@@ -1,4 +1,4 @@
-# League Express Proxy
+# League Playtime API
 
 You can see your League of Legends overall playtime for all game-modes (you can also filter for them). Also you can
 receive all your played games, idk how exactly I will implement this. So let's see how this is written in the
@@ -13,13 +13,13 @@ Filter for Ranked Games coming soon...
 Clone the project
 
 ```bash
-  git clone https://github.com/CowsWasTaken/league-express-proxy.git
+  git clone https://github.com/CowsWasTaken/league-playtime-api.git
 ```
 
 Go to the project directory (don't forget to set your `API_KEY` in the `.env` file)
 
 ```bash
-  cd league-express-proxy
+  cd league-playtime-api
 ```
 
 Run Database
