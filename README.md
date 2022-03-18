@@ -12,13 +12,13 @@ For this project i not really cared about code quality, so here we go...
 Clone the project
 
 ```bash
-  git clone https://github.com/CowsWasTaken/league-express-proxy.git
+  git clone https://github.com/CowsWasTaken/league-playtime-api.git
 ```
 
 Go to the project directory (don't forget to set your `API_KEY` in the `.env` file)
 
 ```bash
-  cd league-express-proxy
+  cd league-playtime-api
 ```
 
 
