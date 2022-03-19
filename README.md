@@ -1,10 +1,12 @@
 # League Playtime API
 
 You can see your League of Legends overall playtime for all game-modes (you can also filter for them). Also you can
-receive all your played games, idk how exactly I will implement this. So let's see how this is written in the
-documentation (if one comes)
+receive all your played games, IDK how exactly I will implement this. 
 
-For this project i not really cared about code quality, so here we go...
+So let's see how this is written in the
+documentation (hope this is up-to-date)
+
+I just tried to make it work, optimization coming later
 
 Filter for Ranked Games coming soon...
 
@@ -44,6 +46,9 @@ You can access the service on `http://localhost:port/` (default is set to 4000)
 
 ## Requirements
 
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/get-docker/)
+[![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/en/download/)
+
 ### API_KEY Requirements
 
 To get an API_KEY visit https://developer.riotgames.com/ , create an account and generate an `API_KEY`
@@ -54,18 +59,15 @@ Make sure to have `Docker` and `Docker Compose` installed at your machine.
 
 The latest version of `mysql` image is used for the database.
 
-The Database schema can be seen in the `schema.sql`
-
-You can also use your own database implementation, I used Knex.js as Query Builder so u just need to change the config
-and client info of it. Just stick a bit to the schema and everything should be good :)
+The Database schema can be seen in the `schema.sql`. As Query Builder is Knex.js used, so its relative versatile
 
 ### Environment Variable Requirements
 
 To run this project, you will need to add the following environment variables to your .env file
 
-```bash
-Example: 
+Example:
 
+```dotenv
 NODE_ENV='development'
 SERVICE_PORT=4000
 DATABASE_HOST='127.0.0.1'
@@ -82,37 +84,43 @@ What optimizations did you make in your code? E.g. refactors, performance improv
 
 ## API Reference
 
-#### Get all items
+#### Get Playtime 
 
-```http
-  GET /matches/:summonername
+```http request
+  GET /:platformValue/matches/:summonername?gameMode=ARAM
 ```
 
-| Parameter       | Type         | Description  | Model                                                          |
-|:----------------|:-------------|:-------------|:---------------------------------------------------------------|
-| `:summonername` | `pathParam`  | **Required** ||
-| `gameMode`      | `queryParam` | Optional     | https://static.developer.riotgames.com/docs/lol/gameModes.json |
+| Parameter        | Type         | Description  | Model                                                          |
+|:-----------------|:-------------|:-------------|:---------------------------------------------------------------|
+| `:platformValue` | `pathParam`  | **Required** | https://developer.riotgames.com/docs/lol#_routing-values       |
+| `:summonername`  | `pathParam`  | **Required** ||
+| `gameMode`       | `queryParam` | Optional     | https://static.developer.riotgames.com/docs/lol/gameModes.json |
 
 Returns played matches and playtime in seconds
 
-``` http
+``` json
 {
-    "matchesCount": 361,
-    "playtime": 458603 
+    "gameMode": {
+        "gameMode": "ARAM",
+        "description": "ARAM games"
+    },
+    "matchesCount": 866,
+    "playtime": 1018842
 }
 ```
 
 ### Get all matches
 
-```http
-  GET /matches/:summonername
+```http request
+  GET /:platformValue/matches/:summonername/detailed
 ```
 
-| Parameter       | Type        | Description  | Model |
-|:----------------|:------------|:-------------|:------|
-| `:summonername` | `pathParam` | **Required** ||
+| Parameter        | Type        | Description  | Model                                                    |
+|:-----------------|:------------|:-------------|:---------------------------------------------------------|
+| `:platformValue` | `pathParam` | **Required** | https://developer.riotgames.com/docs/lol#_routing-values |
+| `:summonername`  | `pathParam` | **Required** ||
 
-```
+``` json
 [
   {
         "matchId": "EUW1_5775938866",
@@ -135,25 +143,33 @@ Returns played matches and playtime in seconds
         "gameType": "MATCHED_GAME",
         "gameMode": "ARAM",
         "mapId": 12
-    }
+    }, 
+    ...
 ]
 ```
 
 ### Fetch Matches
 
-Fetch and store all Matches related to summoner in database
+Fetch and store all Matches related to summoner in database.
 
-```http
-  POST /matches/:summonername/execute
+
+Not yet optimized for fetching Summoner Matches at the same time, 
+because the Rate Limit from the League `API_KEY` is quickly reached
+for Development Keys
+
+```http request
+  POST /:platformValue/matches/:summonername/execute
 ```
 
-| Parameter       | Type        | Description  | Model |
-|:----------------|:------------|:-------------|:------|
-| `:summonername` | `pathParam` | **Required** ||
+| Parameter        | Type        | Description  | Model                                                    |
+|:-----------------|:------------|:-------------|:---------------------------------------------------------|
+| `:platformValue` | `pathParam` | **Required** | https://developer.riotgames.com/docs/lol#_routing-values |
+| `:summonername`  | `pathParam` | **Required** ||
 
 ## Authors
 
-- [@CowsWasTaken](https://github.com/CowsWasTaken) (send me your bitcoin)
+- [@CowsWasTaken](https://github.com/CowsWasTaken) (send me your bitcoin )
+    jkjk unless ...
 
 ## License
 

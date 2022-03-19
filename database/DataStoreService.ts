@@ -81,9 +81,11 @@ export class DataStoreService {
 		return this.db.insert(summonerMatchEntity).into(Tables.SUMMONER_MATCH_TBL).catch((err: any) => err);
 	}
 
-	/*
-        saves match in database and links it to existing summoner
-    */
+	/**
+	 *
+	 * @param puuid	puuid must already exist as tupel in database
+	 * @param match saves matches and links it to parameter puuid
+	 */
 	async saveFullMatch(puuid: string, match: MatchEntity): Promise<any> {
 		await this.db.insert(match).into(Tables.MATCH_TBL).catch(err => err);
 		return this.linkSummonerToMatch(puuid, match.matchId);

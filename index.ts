@@ -1,13 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import {PlatformHostValue} from './constants/PlatformHostValue';
 import {MatchEntity} from './models/Entities/MatchEntity';
 import {LeagueApiService} from './services/LeagueApiService';
 import {ServiceController} from './services/ServiceController';
 import {config} from 'dotenv';
 import {GameMode} from './models/GameMode';
-import {ExceptionHandler} from './exception/ExceptionHandler';
+import {ExceptionHandler} from './exception/ErrorHandler/ExceptionHandler';
 import {FetchInfo} from './models/FetchInfo';
+import {PlatformHostValue} from './models/HostValues/PlatformHostValue';
 
 setEnvVariables();
 const app = express();
@@ -20,14 +20,16 @@ const serviceController = ServiceController.getInstance();
 /*
     is to fetch all games from summoner to database
  */
-app.post('/matches/:summonername/execute', async (req, res, next) => {
+app.post('/:platformValue/matches/:summonername/execute', async (req, res, next) => {
 
     try {
+        const platformQuery: string = req.params.platformValue;
+        const platformHost: PlatformHostValue = PlatformHostValue.getConstant(platformQuery);
         const summonername = req.params.summonername;
-        const summonerDTO = await serviceController.getSummonerForName(summonername);
-        const filteredMatches = await serviceController.getFilteredMatchesForPuuid(summonerDTO.puuid);
+        const summonerDTO = await serviceController.getSummonerForName(summonername, platformHost);
+        const filteredMatches = await serviceController.getFilteredMatchesForPuuid(platformHost.regionalHostValue, summonerDTO.puuid);
         res.json(FetchInfo.calculate(filteredMatches));
-        await serviceController.fetchAndSaveForFilteredMatchesSummoner( summonerDTO, filteredMatches);
+        await serviceController.fetchAndSaveForFilteredMatchesSummoner(platformHost.regionalHostValue, summonerDTO, filteredMatches);
     } catch (err) {
         next(err);
     }
@@ -37,10 +39,12 @@ app.post('/matches/:summonername/execute', async (req, res, next) => {
 /*
     returns every match finding for summoner stored in database
 */
-app.get('/matches/:summonername/detailed', async (req, res, next) => {
+app.get('/:platformValue/matches/:summonername/detailed', async (req, res, next) => {
 
     try {
-        const summonerDTO = await leagueApiService.getPlayerPUUID(PlatformHostValue.EUW1, req.params.summonername);
+        const platformQuery: string = req.params.platformValue;
+        const platformHost: PlatformHostValue = PlatformHostValue.getConstant(platformQuery);
+        const summonerDTO = await leagueApiService.getPlayerPUUID(platformHost, req.params.summonername);
         const list: MatchEntity[] = await serviceController.getMatchesForPuuid(summonerDTO.puuid);
         res.json(list);
     } catch (err) {
@@ -52,12 +56,14 @@ app.get('/matches/:summonername/detailed', async (req, res, next) => {
 /*
     returns overall stats or for specified query gamemode, query parameter is the gamemode
  */
-app.get('/matches/:summonername', async (req, res, next) => {
+app.get('/:platformValue/matches/:summonername', async (req, res, next) => {
     try {
         const gameModeQuery = req.query.gameMode as string | undefined;
         const gameModeObject: GameMode | undefined = gameModeQuery ? GameMode.getConstant(gameModeQuery) : undefined;
-        const summonername = req.params.summonername;
-        const matchesSummary = await serviceController.getMatchesSummary(summonername, gameModeObject);
+        const platformQuery: string = req.params.platformValue;
+        const platformHost: PlatformHostValue = PlatformHostValue.getConstant(platformQuery);
+        const summonername: string = req.params.summonername;
+        const matchesSummary = await serviceController.getMatchesSummary(summonername, platformHost, gameModeObject);
         res.json(matchesSummary);
     } catch (err) {
         next(err);
