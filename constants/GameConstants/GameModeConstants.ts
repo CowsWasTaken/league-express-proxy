@@ -1,5 +1,5 @@
 // refer to https://static.developer.riotgames.com/docs/lol/gameModes.json
-import {GameMode} from '../models/GameMode';
+import {GameMode} from '../../models/GameMode';
 
 export const GameModeConstants: GameMode[] = [
 	{

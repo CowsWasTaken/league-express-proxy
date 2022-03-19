@@ -1,4 +1,4 @@
-import {AppError} from './errors/AppError';
+import {AppError} from '../errors/AppError';
 
 process.on('unhandledRejection', (reason: string, p: Promise<any>) => {
 	// I just caught an unhandled promise rejection,

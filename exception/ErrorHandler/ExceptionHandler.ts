@@ -1,6 +1,6 @@
-import HttpStatusCode from '../models/HttpStatusCodes';
-import {NetworkError} from './errors/NetworkError';
-import {AppError} from './errors/AppError';
+import HttpStatusCode from '../../constants/HttpStatusCodes';
+import {NetworkError} from '../errors/NetworkError';
+import {AppError} from '../errors/AppError';
 
 export class ExceptionHandler {
 

@@ -1,6 +1,6 @@
 // centralized error object that derives from Node’s Error
 
-import HttpStatusCode from '../../models/HttpStatusCodes';
+import HttpStatusCode from '../../constants/HttpStatusCodes';
 import {AppError} from './AppError';
 
 export class NetworkError extends AppError {

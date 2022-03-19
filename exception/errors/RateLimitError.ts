@@ -1,4 +1,4 @@
-import HttpStatusCode from '../../models/HttpStatusCodes';
+import HttpStatusCode from '../../constants/HttpStatusCodes';
 import {NetworkError} from './NetworkError';
 
 export interface LeagueHttpError {
