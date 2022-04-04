@@ -1,14 +1,8 @@
 # League Playtime API
 
-You can see your League of Legends overall playtime for all game-modes (you can also filter for them). Also you can
-receive all your played games, IDK how exactly I will implement this. 
+This project will be continued under a different repository https://github.com/CowsWasTaken/nest-league-playtime-api
 
-So let's see how this is written in the
-documentation (hope this is up-to-date)
-
-I just tried to make it work, optimization coming later
-
-Filter for Ranked Games coming soon...
+Unless this lets you see your total playtime (also with a filter for game modes) and a list of all matches played
 
 ## Run Locally
 
